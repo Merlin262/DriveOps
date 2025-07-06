@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace DriveOps.UnitTests.Util
 {
-    public class TestVehicle : Vehicle
+    internal class TestVehicle : Vehicle
     {
-        public TestVehicle(string chassisSeries, uint chassisNumber, string color, VehicleType type, int numberOfPassengers)
+        internal TestVehicle(string chassisSeries, uint chassisNumber, string color, VehicleType type, int numberOfPassengers)
             : base(new ChassisId(chassisSeries, chassisNumber), color)
         {
             base.Type = type;

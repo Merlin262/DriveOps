@@ -14,13 +14,6 @@ namespace DriveOps.Domain.ValueObjects
             Number = number;
         }
 
-        public override bool Equals(object? obj)
-        {
-            if (obj is not ChassisId other)
-                return false;
-            return Series == other.Series && Number == other.Number;
-        }
-
         public override int GetHashCode() => HashCode.Combine(Series, Number);
     }
 }

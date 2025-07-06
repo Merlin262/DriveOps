@@ -3,11 +3,9 @@ using DriveOps.Domain.ValueObjects;
 using DriveOps.Enums;
 using DriveOps.Services.Services;
 using DriveOps.UnitTests.Util;
+using FluentValidation;
+using FluentValidation.Results;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DriveOps.UnitTests.Commands
@@ -15,7 +13,7 @@ namespace DriveOps.UnitTests.Commands
     public class CreateVehicleCommandHandlerTests
     {
         [Fact]
-        public async Task Handle_ReturnsResultWithChassisId_WhenVehicleIsCreated()
+        internal async Task Handle_ReturnsResultWithChassisId_WhenVehicleIsCreated()
         {
             // Arrange
             var expectedChassisId = new ChassisId("SERIE", 123);
@@ -24,7 +22,11 @@ namespace DriveOps.UnitTests.Commands
                 VehicleType.Car, "SERIE", 123, "Azul", Arg.Any<CancellationToken>())
                 .Returns(expectedChassisId);
 
-            var handler = new CreateVehicleCommandHandler(service);
+            var validator = Substitute.For<IValidator<CreateVehicleCommand>>();
+            validator.ValidateAsync(Arg.Any<CreateVehicleCommand>(), Arg.Any<CancellationToken>())
+                .Returns(new ValidationResult());
+
+            var handler = new CreateVehicleCommandHandler(service, validator);
 
             var command = new CreateVehicleCommand
             {
@@ -45,7 +47,7 @@ namespace DriveOps.UnitTests.Commands
         }
 
         [Fact]
-        public async Task Handle_PassesCorrectParametersToService()
+        internal async Task Handle_PassesCorrectParametersToService()
         {
             // Arrange
             var service = Substitute.For<IVehicleService>();
@@ -56,7 +58,11 @@ namespace DriveOps.UnitTests.Commands
                     call.ArgAt<uint>(2)
                 ));
 
-            var handler = new CreateVehicleCommandHandler(service);
+            var validator = Substitute.For<IValidator<CreateVehicleCommand>>();
+            validator.ValidateAsync(Arg.Any<CreateVehicleCommand>(), Arg.Any<CancellationToken>())
+                .Returns(new ValidationResult());
+
+            var handler = new CreateVehicleCommandHandler(service, validator);
 
             var command = new CreateVehicleCommand
             {
@@ -72,6 +78,29 @@ namespace DriveOps.UnitTests.Commands
             // Assert
             await service.Received(1).CreateVehicleAsync(
                 VehicleType.Bus, "BUS123", 999, "Vermelho", Arg.Any<CancellationToken>());
+        }
+
+        [Fact]
+        internal async Task Handle_ThrowsValidationException_WhenValidationFails()
+        {
+            // Arrange
+            var service = Substitute.For<IVehicleService>();
+            var failures = new List<ValidationFailure> { new ValidationFailure("Type", "Invalid type") };
+            var validator = Substitute.For<IValidator<CreateVehicleCommand>>();
+            validator.ValidateAsync(Arg.Any<CreateVehicleCommand>(), Arg.Any<CancellationToken>())
+                .Returns(new ValidationResult(failures));
+
+            var handler = new CreateVehicleCommandHandler(service, validator);
+            var command = new CreateVehicleCommand
+            {
+                Type = (VehicleType)999,
+                ChassisSeries = "SERIE",
+                ChassisNumber = 123,
+                Color = "Azul"
+            };
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(command, CancellationToken.None));
         }
     }
 }

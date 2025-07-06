@@ -15,7 +15,7 @@ namespace DriveOps.UnitTests.Queries
     public class GetAllVehiclesQueryHandlerTests
     {
         [Fact]
-        public async Task Handle_ReturnsMappedResults_WhenVehiclesExist()
+        internal async Task Handle_ReturnsMappedResults_WhenVehiclesExist()
         {
             // Arrange
             var vehicles = new List<Vehicle>
@@ -50,7 +50,7 @@ namespace DriveOps.UnitTests.Queries
         }
 
         [Fact]
-        public async Task Handle_ReturnsEmptyList_WhenNoVehiclesExist()
+        internal async Task Handle_ReturnsEmptyList_WhenNoVehiclesExist()
         {
             // Arrange
             var repository = Substitute.For<IVehicleRepository>();

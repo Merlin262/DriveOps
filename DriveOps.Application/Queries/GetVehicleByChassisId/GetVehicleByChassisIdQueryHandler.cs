@@ -1,37 +1,39 @@
 ﻿using DriveOps.Application.Queries.GetAllVehicles;
+using DriveOps.Application.Queries.GetVehicleByChassisId;
 using DriveOps.Domain.Repositories;
+using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DriveOps.Application.Queries.GetVehicleByChassisId
+public class GetVehicleByChassisIdQueryHandler : IRequestHandler<GetVehicleByChassisIdQuery, GetAllVehiclesQueryHandlerResult>
 {
-    public class GetVehicleByChassisIdQueryHandler : IRequestHandler<GetVehicleByChassisIdQuery, GetAllVehiclesQueryHandlerResult>
+    private readonly IVehicleRepository _vehicleRepository;
+    private readonly IValidator<GetVehicleByChassisIdQuery> _validator;
+
+    public GetVehicleByChassisIdQueryHandler(
+        IVehicleRepository vehicleRepository,
+        IValidator<GetVehicleByChassisIdQuery> validator)
     {
-        private readonly IVehicleRepository _vehicleRepository;
+        _vehicleRepository = vehicleRepository;
+        _validator = validator;
+    }
 
-        public GetVehicleByChassisIdQueryHandler(IVehicleRepository vehicleRepository)
+    public async Task<GetAllVehiclesQueryHandlerResult> Handle(GetVehicleByChassisIdQuery request, CancellationToken cancellationToken)
+    {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+
+        var vehicle = await _vehicleRepository.GetByChassisIdAsync(request.ChassisSeries, request.ChassisNumber, cancellationToken);
+        if (vehicle == null)
+            return null;
+
+        return new GetAllVehiclesQueryHandlerResult
         {
-            _vehicleRepository = vehicleRepository;
-        }
-
-        public async Task<GetAllVehiclesQueryHandlerResult> Handle(GetVehicleByChassisIdQuery request, CancellationToken cancellationToken)
-        {
-            var vehicle = await _vehicleRepository.GetByChassisIdAsync(request.ChassisSeries, request.ChassisNumber);
-            if (vehicle == null)
-                return null;
-
-            return new GetAllVehiclesQueryHandlerResult
-            {
-                ChassisSeries = vehicle.ChassisSeries,
-                ChassisNumber = vehicle.ChassisNumber,
-                Color = vehicle.Color,
-                Type = vehicle.Type,
-                NumberOfPassengers = vehicle.NumberOfPassengers
-            };
-        }
+            ChassisSeries = vehicle.ChassisSeries,
+            ChassisNumber = vehicle.ChassisNumber,
+            Color = vehicle.Color,
+            Type = vehicle.Type,
+            NumberOfPassengers = vehicle.NumberOfPassengers
+        };
     }
 }

@@ -1,11 +1,9 @@
 using Azure.Identity;
-using DriveOps.Application.Commands.CreateVehicle;
-using DriveOps.Domain.Repositories;
 using DriveOps.Infrastructure.Data.Context;
-using DriveOps.Infrastructure.Repositories;
-using DriveOps.Services.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using DriveOps.DependencyInjection;
 using System;
 using System.Reflection;
 
@@ -13,19 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateVehicleCommandHandler).Assembly));
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
-builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddDriveOpsServices();
 
 var keyVaultName = builder.Configuration["DriveOps-KV"];
-if (string.IsNullOrWhiteSpace(keyVaultName))
-    throw new InvalidOperationException("DriveOps-KV não está configurado.");
-
 var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
 builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
 
@@ -35,7 +26,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         b => b.MigrationsAssembly("DriveOps.Infrastructure")
     )
 );
-
 
 var app = builder.Build();
 
