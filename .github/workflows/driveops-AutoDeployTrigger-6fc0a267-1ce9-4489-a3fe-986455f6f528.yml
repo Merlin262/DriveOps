@@ -34,16 +34,13 @@ jobs:
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}DriveOps
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
+          appSourcePath: ${{ github.workspace }}/DriveOps
+          dockerfilePath: DriveOps/Dockerfile
           registryUrl: driveops.azurecr.io
           registryUsername: ${{ secrets.DRIVEOPS_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.DRIVEOPS_REGISTRY_PASSWORD }}
           containerAppName: driveops
           resourceGroup: DriveOps
           imageToBuild: driveops.azurecr.io/driveops:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
 
 
