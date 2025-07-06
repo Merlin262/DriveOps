@@ -1,0 +1,49 @@
+name: Trigger auto deployment for driveops
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/driveops-AutoDeployTrigger-6fc0a267-1ce9-4489-a3fe-986455f6f528.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.DRIVEOPS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.DRIVEOPS_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.DRIVEOPS_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}DriveOps
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: driveops.azurecr.io
+          registryUsername: ${{ secrets.DRIVEOPS_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.DRIVEOPS_REGISTRY_PASSWORD }}
+          containerAppName: driveops
+          resourceGroup: DriveOps
+          imageToBuild: driveops.azurecr.io/driveops:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
