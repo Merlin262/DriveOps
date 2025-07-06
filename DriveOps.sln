@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveOps.Domain", "DriveOps
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveOps.Infrastructure", "DriveOps.Infrastructure\DriveOps.Infrastructure.csproj", "{154F26C0-84E9-4FDE-B9CF-053119BBF01C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriveOps.UnitTests", "DriveOps.UnitTests\DriveOps.UnitTests.csproj", "{DE63CA61-9155-438C-B84E-ACF14A59D01D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{154F26C0-84E9-4FDE-B9CF-053119BBF01C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{154F26C0-84E9-4FDE-B9CF-053119BBF01C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{154F26C0-84E9-4FDE-B9CF-053119BBF01C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE63CA61-9155-438C-B84E-ACF14A59D01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE63CA61-9155-438C-B84E-ACF14A59D01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE63CA61-9155-438C-B84E-ACF14A59D01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE63CA61-9155-438C-B84E-ACF14A59D01D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
