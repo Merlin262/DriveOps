@@ -9,6 +9,18 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins(
+                "http://localhost:3000",
+                "https://agreeable-mushroom-0ae5d6a0f.1.azurestaticapps.net"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
@@ -32,14 +44,13 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 
 app.UseSwagger();
+app.UseSwaggerUI();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 

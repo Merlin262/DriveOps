@@ -13,7 +13,5 @@ namespace DriveOps.Domain.ValueObjects
             Series = series;
             Number = number;
         }
-
-        public override int GetHashCode() => HashCode.Combine(Series, Number);
     }
 }
